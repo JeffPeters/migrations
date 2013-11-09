@@ -102,6 +102,17 @@ abstract class AbstractMigration
         $this->version->addSql($sql, $params, $types);
     }
 
+    /**
+     * For Backward compatibility with older migrations files
+     */
+    protected function _addSQL($sql, array $params = array(), array $types = array())
+    {
+        trigger_error("Deprecated function called "
+            ."(Use AbstractMigration->addSql() not AbstractMigration->_addSQL())."
+            , E_USER_NOTICE);
+        $this->addSql($sql, $params, $types);
+    }
+
     protected function write($message)
     {
         $this->outputWriter->write($message);
