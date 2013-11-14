@@ -100,19 +100,26 @@ abstract class AbstractCommand extends Command
                 throw new \InvalidArgumentException('You have to specify a --db-configuration file or pass a Database Connection as a dependency to the Migrations.');
             }
 
+            $configuration_filename = "";
+            $configuration_class = "";
             if ($input->getOption('configuration')) {
-                $info = pathinfo($input->getOption('configuration'));
-                $class = $info['extension'] === 'xml' ? 'Doctrine\DBAL\Migrations\Configuration\XmlConfiguration' : 'Doctrine\DBAL\Migrations\Configuration\YamlConfiguration';
-                $configuration = new $class($conn, $outputWriter);
-                $configuration->load($input->getOption('configuration'));
+                $configuration_filename = $input->getOption('configuration');
             } elseif (file_exists('migrations.xml')) {
-                $configuration = new XmlConfiguration($conn, $outputWriter);
-                $configuration->load('migrations.xml');
+                $configuration_filename = 'migrations.xml';
             } elseif (file_exists('migrations.yml')) {
-                $configuration = new YamlConfiguration($conn, $outputWriter);
-                $configuration->load('migrations.yml');
+                $configuration_filename = 'migrations.yml';
             } else {
-                $configuration = new Configuration($conn, $outputWriter);
+                $configuration_class = 'Doctrine\DBAL\Migrations\Configuration';
+            }
+            if (!empty($configuration_filename)) {
+                $info = pathinfo($configuration_filename);
+                $class = $info['extension'] === 'xml' ? 'Doctrine\DBAL\Migrations\Configuration\XmlConfiguration' : 'Doctrine\DBAL\Migrations\Configuration\YamlConfiguration';
+                //Load a custom classname if the file defines one
+                $configuration_class = $class::getCustomConfigruationClassFromFile($configuration_filename);
+            }
+            $configuration = new $configuration_class($conn, $outputWriter);
+            if (!empty($configuration_filename)) {
+                $configuration->load($configuration_filename);
             }
             $this->configuration = $configuration;
         }

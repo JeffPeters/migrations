@@ -51,14 +51,14 @@ class Configuration
      *
      * @var boolean
      */
-    private $migrationTableCreated = false;
+    protected $migrationTableCreated = false;
 
     /**
      * Connection instance to use for migrations
      *
      * @var Connection
      */
-    private $connection;
+    protected $connection;
 
     /**
      * OutputWriter instance for writing output during migrations
@@ -108,6 +108,8 @@ class Configuration
             $outputWriter = new OutputWriter();
         }
         $this->outputWriter = $outputWriter;
+        $this->migrationTableCreated = false;
+        $this->setVersionClass('Doctrine\DBAL\Migrations\Version');
     }
 
     /**
@@ -245,6 +247,26 @@ class Configuration
     }
 
     /**
+     * Set the version class to use. Defaults to Doctrine\DBAL\Migrations\Version
+     *
+     * @param string $verionClass The version classname
+     */
+    public function setVersionClass($verionClass)
+    {
+        $this->verionClass = $verionClass;
+    }
+
+    /**
+     * Returns the version class to use. Defaults to Doctrine\DBAL\Migrations\Version
+     *
+     * @return string $verionClass The version classname
+     */
+    public function getVersionClass()
+    {
+        return $this->verionClass;
+    }
+    
+   /**
      * Register migrations from a given directory. Recursively finds all files
      * with the pattern VersionYYYYMMDDHHMMSS.php as the filename and registers
      * them as migrations.
@@ -290,7 +312,8 @@ class Configuration
         if (isset($this->migrations[$version])) {
             throw MigrationException::duplicateMigrationVersion($version, get_class($this->migrations[$version]));
         }
-        $version = new Version($this, $version, $class);
+        $versionClass = $this->getVersionClass();
+        $version = new $versionClass($this, $version, $class);
         $this->migrations[$version->getVersion()] = $version;
         ksort($this->migrations);
 
