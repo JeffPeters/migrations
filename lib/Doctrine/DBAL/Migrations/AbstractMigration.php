@@ -102,6 +102,20 @@ abstract class AbstractMigration
         $this->version->addSql($sql, $params, $types);
     }
 
+    /**
+     * For Backward compatibility with older migrations files
+     * created from the ericclemmons/migrations phar file dated March 2012
+     * which is still linked in the README.md
+     * @deprecated deprecated since 2/5/2011 revision 1a1ca1
+     */
+    protected function _addSQL($sql, array $params = array(), array $types = array())
+    {
+        trigger_error("Deprecated function called "
+            ."(Use AbstractMigration->addSql() not AbstractMigration->_addSQL())."
+            , E_USER_DEPRECATED);
+        $this->addSql($sql, $params, $types);
+    }
+
     protected function write($message)
     {
         $this->outputWriter->write($message);
