@@ -30,6 +30,20 @@ namespace Doctrine\DBAL\Migrations\Configuration;
 class XmlConfiguration extends AbstractFileConfiguration
 {
     /**
+     * Returns the custom Configuration classname from the configuration file
+     *
+     * @return string $class The Configuration classname
+     */
+    static public function getCustomConfigruationClassFromFile($file) {
+        $xml = simplexml_load_file($file);
+        if (isset($xml->{'custom-configruation-class'})) {
+            return $xml->{'custom-configruation-class'};
+        } else {
+            return 'Doctrine\DBAL\Migrations\Configuration\XmlConfiguration';
+        }
+    }
+    
+    /**
      * @inheritdoc
      */
     protected function doLoad($file)
@@ -43,6 +57,9 @@ class XmlConfiguration extends AbstractFileConfiguration
         }
         if (isset($xml->{'migrations-namespace'})) {
             $this->setMigrationsNamespace((string) $xml->{'migrations-namespace'});
+        }
+        if (isset($xml->{'custom-version-class'})) {
+            $this->setVersionClass($xml->{'custom-version-class'});
         }
         if (isset($xml->{'migrations-directory'})) {
             $migrationsDirectory = $this->getDirectoryRelativeToFile($file, (string) $xml->{'migrations-directory'});

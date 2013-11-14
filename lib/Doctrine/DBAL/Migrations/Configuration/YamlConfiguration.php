@@ -32,6 +32,20 @@ use Symfony\Component\Yaml\Yaml;
 class YamlConfiguration extends AbstractFileConfiguration
 {
     /**
+     * Returns the custom Configuration classname from the configuration file
+     *
+     * @return string $class The Configuration classname
+     */
+    static public function getCustomConfigruationClassFromFile($file) {
+        $array = Yaml::parse($file);
+        if (isset($array['custom_configruation_class'])) {
+            return $array['custom_configruation_class'];
+        } else {
+            return 'Doctrine\DBAL\Migrations\Configuration\YamlConfiguration';
+        }
+    }
+    
+    /**
      * @inheritdoc
      */
     protected function doLoad($file)
@@ -46,6 +60,9 @@ class YamlConfiguration extends AbstractFileConfiguration
         }
         if (isset($array['migrations_namespace'])) {
             $this->setMigrationsNamespace($array['migrations_namespace']);
+        }
+        if (isset($array['custom_version_class'])) {
+            $this->setVersionClass($array['custom_version_class']);
         }
         if (isset($array['migrations_directory'])) {
             $migrationsDirectory = $this->getDirectoryRelativeToFile($file, $array['migrations_directory']);
