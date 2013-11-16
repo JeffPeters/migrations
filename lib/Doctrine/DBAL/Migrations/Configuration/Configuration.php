@@ -44,56 +44,56 @@ class Configuration
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * Flag for whether or not the migration table has been created
      *
      * @var boolean
      */
-    private $migrationTableCreated = false;
+    protected $migrationTableCreated = false;
 
     /**
      * Connection instance to use for migrations
      *
      * @var Connection
      */
-    private $connection;
+    protected $connection;
 
     /**
      * OutputWriter instance for writing output during migrations
      *
      * @var OutputWriter
      */
-    private $outputWriter;
+    protected $outputWriter;
 
     /**
      * The migration table name to track versions in
      *
      * @var string
      */
-    private $migrationsTableName = 'doctrine_migration_versions';
+    protected $migrationsTableName = 'doctrine_migration_versions';
 
     /**
      * The path to a directory where new migration classes will be written
      *
      * @var string
      */
-    private $migrationsDirectory;
+    protected $migrationsDirectory;
 
     /**
      * Namespace the migration classes live in
      *
      * @var string
      */
-    private $migrationsNamespace;
+    protected $migrationsNamespace;
 
     /**
      * Array of the registered migrations
      *
      * @var Version[]
      */
-    private $migrations = array();
+    protected $migrations = array();
 
     /**
      * Construct a migration configuration object.

@@ -42,65 +42,65 @@ class Version
      *
      * @var Configuration
      */
-    private $configuration;
+    protected $configuration;
 
     /**
      * The OutputWriter object instance used for outputting information
      *
      * @var OutputWriter
      */
-    private $outputWriter;
+    protected $outputWriter;
 
     /**
      * The version in timestamp format (YYYYMMDDHHMMSS)
      *
      * @param int
      */
-    private $version;
+    protected $version;
 
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
      */
-    private $sm;
+    protected $sm;
 
     /**
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
-    private $platform;
+    protected $platform;
 
     /**
      * The migration instance for this version
      *
      * @var AbstractMigration
      */
-    private $migration;
+    protected $migration;
 
     /**
      * @var \Doctrine\DBAL\Connection
      */
-    private $connection;
+    protected $connection;
 
     /**
      * @var string
      */
-    private $class;
+    protected $class;
 
     /** The array of collected SQL statements for this version */
-    private $sql = array();
+    protected $sql = array();
 
     /** The array of collected parameters for SQL statements for this version */
-    private $params = array();
+    protected $params = array();
 
     /** The array of collected types for SQL statements for this version */
-    private $types = array();
+    protected $types = array();
 
     /** The time in seconds that this migration version took to execute */
-    private $time;
+    protected $time;
 
     /**
      * @var int
      */
-    private $state = self::STATE_NONE;
+    protected $state = self::STATE_NONE;
 
     public function __construct(Configuration $configuration, $version, $class)
     {
