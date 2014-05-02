@@ -102,6 +102,13 @@ class Version
      */
     private $state = self::STATE_NONE;
 
+    /**
+     * Do not load every table into the Schema, only tables used by the migration
+     * This could be a configration option if needed, hard coding to true for now
+     * @var bool
+     */
+    protected $useLazySchema = true;
+
     public function __construct(Configuration $configuration, $version, $class)
     {
         $this->configuration = $configuration;
@@ -112,6 +119,9 @@ class Version
         $this->platform = $this->connection->getDatabasePlatform();
         $this->migration = new $class($this);
         $this->version = $this->migration->getName() ?: $version;
+        if (getenv('doctrine_migration_do_not_use_lazy_migration')) {
+            $this->useLazySchema = false;
+        }
     }
 
     /**
@@ -238,7 +248,11 @@ class Version
             $start = microtime(true);
 
             $this->state = self::STATE_PRE;
-            $fromSchema = $this->sm->createSchema();
+            if ($this->useLazySchema) {
+                $fromSchema = new LazyLoadSchema($this->sm);
+            } else {
+                $fromSchema = $this->sm->createSchema();
+            }
             $this->migration->{'pre' . ucfirst($direction)}($fromSchema);
 
             if ($direction === 'up') {
@@ -251,6 +265,9 @@ class Version
 
             $toSchema = clone $fromSchema;
             $this->migration->$direction($toSchema);
+            if ($this->useLazySchema) {
+                $fromSchema->loadUsedTablesFrom($toSchema);
+            }
             $this->addSql($fromSchema->getMigrateToSql($toSchema, $this->platform));
 
             if ($dryRun === false) {
